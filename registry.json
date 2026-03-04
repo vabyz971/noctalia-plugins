@@ -862,7 +862,7 @@
     {
       "id": "weather-indicator",
       "name": "Weather Indicator",
-      "version": "1.0.9",
+      "version": "1.0.10",
       "official": false,
       "author": "Sovereign",
       "description": "Shows the current weather condition and tempurature.",
@@ -872,7 +872,7 @@
       "tags": [
         "Bar"
       ],
-      "lastUpdated": "2026-02-25T18:02:47-05:00"
+      "lastUpdated": "2026-03-03T16:56:42-05:00"
     },
     {
       "id": "weekly-calendar",
