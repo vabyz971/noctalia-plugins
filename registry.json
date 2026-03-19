@@ -616,6 +616,24 @@
       "lastUpdated": "2026-03-18T17:51:21+01:00"
     },
     {
+      "id": "niri-animation-picker",
+      "name": "Niri Animation Picker",
+      "version": "1.1.0",
+      "official": false,
+      "author": "Duncan-Rose",
+      "description": "Pick a KDL animation preset and write it as an include into your niri config",
+      "repository": "",
+      "minNoctaliaVersion": "3.6.0",
+      "license": "MIT",
+      "tags": [
+        "Fun",
+        "Niri",
+        "Theming",
+        "Utility"
+      ],
+      "lastUpdated": "2026-03-18T19:15:18+01:00"
+    },
+    {
       "id": "niri-auto-tile",
       "name": "Niri Auto-Tile",
       "version": "1.2.0",
