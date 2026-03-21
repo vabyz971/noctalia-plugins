@@ -1,6 +1,11 @@
-# Valent Connect Plugin for Noctalia
+# 📱 Valent Connect Plugin for Noctalia
 
 Integrate your mobile devices via the Valent backend. This plugin provides a seamless UI to interact with your phone, powered by Valent (an implementation of the KDE Connect protocol for GNOME/GTK environments).
+
+## What's New (v1.2.0) ✨
+
+- **🚀 Reliable Refresh**: Improved device discovery logic to ensure a single tap correctly updates the device list and status.
+- **🎨 Improved Animation**: Stabilized the header layout and implemented a smoother, more reliable refresh animation.
 
 ## Requirements
 
@@ -61,15 +66,16 @@ spawn-at-startup "valent" "--gapplication-service"
 4. Select your device and click **Pair**.
 5. Accept the pairing request on your phone.
 
-## Features
+## Features 🌟
 
-- **Battery Tracking**: Real-time battery level and charging status.
-- **Connectivity Info**: Signal strength and network type (5G, LTE, etc.).
-- **Find My Phone**: Ring your device remotely.
-- **Send Ping**: Test connection with a notification.
-- **File Sharing**: Send files from your PC to your phone.
-- **Browse Files**: Mount and browse your phone's filesystem via SFTP.
-- **Notifications**: View the number of active notifications on your device.
+- **🔋 Battery Tracking**: Real-time battery level and charging status.
+- **📶 Connectivity Info**: Signal strength and network type (5G, LTE, etc.).
+- **🔔 Find My Phone**: Ring your device remotely.
+- **📡 Send Ping**: Test connection with a notification.
+- **📁 File Sharing**: Send files from your PC to your phone.
+- **📂 Browse Files**: Mount and browse your phone's filesystem via SFTP.
+- **💬 Notifications**: View the number of active notifications on your device.
+- **🔄 Manual Refresh**: Trigger device discovery and update device state with a single tap.
 
 ## Troubleshooting
 
