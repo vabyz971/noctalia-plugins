@@ -1238,6 +1238,24 @@
       "lastUpdated": "2026-02-05T11:19:10-05:00"
     },
     {
+      "id": "workspace-overview",
+      "name": "Workspace Overview for Hyprland",
+      "version": "1.0.0",
+      "official": false,
+      "author": "doughbran",
+      "description": "Workspace overview with live window previews and wallpaper backgrounds for Hyprland.",
+      "repository": "https://github.com/noctalia-dev/noctalia-plugins",
+      "minNoctaliaVersion": "3.6.0",
+      "license": "MIT",
+      "tags": [
+        "Hyprland",
+        "Bar",
+        "Panel",
+        "Utility"
+      ],
+      "lastUpdated": "2026-03-21T15:00:15-03:00"
+    },
+    {
       "id": "world-clock",
       "name": "World Clock",
       "version": "1.0.4",
