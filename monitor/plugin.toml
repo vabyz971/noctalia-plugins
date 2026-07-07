@@ -1,0 +1,47 @@
+id = "vabyz971/monitor"
+name = "Monitor Dashboard"
+version = "0.1.0"
+min_noctalia = "5.0.0"
+author = "Vabyz971"
+license = "MIT"
+dependencies = []
+tags = ["monitoring"]
+icon = "device-heart-monitor"
+description = "System and application activity monitor"
+
+# [[panel]]
+# id              = "monitor-panel"
+# entry           = "monitor.luau"
+# width           = 920
+# height          = 780
+# placement       = "attached"
+# position        = "auto"
+
+[[service]]
+id = "system-monitor"
+entry = "service.luau"
+
+[[widget]]
+id = "widget"
+entry = "widget.luau"
+
+    [[widget.setting]]
+    key = "glyph"
+    type = "glyph"
+    label_key = "settings.glyph.label"
+    default = "device-heart-monitor"
+
+    [[widget.setting]]
+    key = "show_widget_text"
+    type = "bool"
+    label_key = "settings.show_widget_text.label"
+    default = false
+
+[[setting]]
+key         = "update_interval"
+type        = "int"
+label_key   = "settings.update_interval.label"
+description = "Vitesse de rafraîchissement des données système et de la liste des processus."
+default     = 1
+min         = 1
+max         = 5

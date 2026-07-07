@@ -1,0 +1,10 @@
+{
+  "languageMode": "nonstrict",
+  "lint": {
+    "FunctionUnused": false
+  },
+  "lintErrors": true,
+  "aliases": {
+    "@noctalia": "./noctalia.d.luau"
+  }
+}
