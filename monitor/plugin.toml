@@ -1,6 +1,6 @@
 id = "vabyz971/monitor"
 name = "Monitor Dashboard"
-version = "0.3.1"
+version = "0.3.2"
 min_noctalia = "5.0.0"
 author = "Vabyz971"
 license = "MIT"
