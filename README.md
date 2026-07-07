@@ -12,7 +12,7 @@ Un tableau de bord de monitoring d'activité système et applicative.
 | Propriété | Valeur |
 |---|---|
 | **ID** | `vabyz971/monitor` |
-| **Version** | 0.3.2 |
+| **Version** | 0.4.2 |
 | **Noctalia requis** | ≥ 5.0.0 |
 | **Auteur** | Vabyz971 |
 | **Licence** | MIT |

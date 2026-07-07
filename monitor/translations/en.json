@@ -30,6 +30,10 @@
   "tooltip_ram": "RAM",
   "tooltip_disk": "DISK",
 
+  "launcher_provider": {
+    "description": "Open the system activity monitor — Press Enter to confirm"
+  },
+
   "settings": {
     "update_interval": {
       "label": "Refresh rate (seconds)",

@@ -1,6 +1,6 @@
 id = "vabyz971/monitor"
 name = "Monitor Dashboard"
-version = "0.3.2"
+version = "0.4.2"
 min_noctalia = "5.0.0"
 author = "Vabyz971"
 license = "MIT"
@@ -8,6 +8,18 @@ dependencies = []
 tags = ["monitoring"]
 icon = "device-heart-monitor"
 description = "System and application activity monitor"
+
+[[launcher_provider]]
+id = "monitor-finder"
+entry = "launcher.luau"
+prefix = "/monitor"
+glyph = "device-heart-monitor"
+include_in_global_search = false
+
+    # La catégorie dans laquelle le résultat apparaîtra
+    [[launcher_provider.category]]
+    id = "system"
+    label = "System"
 
 [[panel]]
 id              = "monitor"
@@ -52,6 +64,7 @@ entry = "widget.luau"
     label_key = "settings.widget.show_stats.label"
     description_key = "settings.widget.show_stats.description"
     default = false
+
 
 
 [[setting]]
