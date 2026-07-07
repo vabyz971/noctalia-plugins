@@ -1,6 +1,6 @@
 id = "vabyz971/monitor"
 name = "Monitor Dashboard"
-version = "0.1.0"
+version = "0.3.1"
 min_noctalia = "5.0.0"
 author = "Vabyz971"
 license = "MIT"
@@ -9,13 +9,13 @@ tags = ["monitoring"]
 icon = "device-heart-monitor"
 description = "System and application activity monitor"
 
-# [[panel]]
-# id              = "monitor-panel"
-# entry           = "monitor.luau"
-# width           = 920
-# height          = 780
-# placement       = "attached"
-# position        = "auto"
+[[panel]]
+id              = "monitor"
+entry           = "monitor.luau"
+width           = 1280
+height          = 720
+placement       = "attached"
+position        = "auto"
 
 [[service]]
 id = "system-monitor"

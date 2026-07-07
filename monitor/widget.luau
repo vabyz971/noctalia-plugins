@@ -35,5 +35,5 @@ noctalia.state.watch("system_metrics", function(stats)
 end)
 
 function onClick()
-  render()
+    noctalia.togglePanel("vabyz971/monitor:monitor")
 end

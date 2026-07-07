@@ -1,20 +1,32 @@
 {
-  "title": "Example",
-  "clicks": {
-    "one": "Clicked {count} time",
-    "other": "Clicked {count} times"
+  "title": "Monitor",
+  "filter_categories": "Filters",
+  "category_processes": "Processes",
+  "category_memory": "Memory",
+  "category_storage": "Storage",
+  "category_network": "Network",
+  "category_graphics": "Graphics",
+  "sort_options": {
+    "croissant": "Croissant",
+    "descending": "Descending",
+    "alphabetical": "Alphabetical"
   },
+  "loading": "Loading...",
+  "no_results": "No matching process",
+  "not_available": "N/A",
+
+  "search_process_placeholder": "Search processes...",
+  "column_pid": "PID",
+  "column_process": "Process",
+  "column_cpu": "CPU",
+  "column_ram": "RAM",
+  "column_disk": "DISK",
+  "column_net": "NET",
+
   "settings": {
     "label": {
       "label": "Label",
       "description": "Text shown in the bar."
-    },
-    "glyph": {
-      "label": "Glyph",
-      "description": "Glyph shown before the label."
-    },
-    "show_glyph": {
-      "label": "Show glyph"
     }
   }
 }
