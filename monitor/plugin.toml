@@ -28,20 +28,37 @@ entry = "widget.luau"
     [[widget.setting]]
     key = "glyph"
     type = "glyph"
-    label_key = "settings.glyph.label"
+    label_key = "settings.widget.glyph.label"
+    description_key = "settings.widget.glyph.description"
     default = "device-heart-monitor"
 
     [[widget.setting]]
     key = "show_widget_text"
     type = "bool"
-    label_key = "settings.show_widget_text.label"
+    label_key = "settings.widget.show_widget_text.label"
+    description_key = "settings.widget.show_widget_text.description"
+    default = true
+
+    [[widget.setting]]
+    key = "use_emoji_tooltip"
+    type = "bool"
+    label_key = "settings.widget.use_emoji.label"
+    description_key = "settings.widget.use_emoji.description"
+    default = true
+
+    [[widget.setting]]
+    key = "show_stats_in_bar"
+    type = "bool"
+    label_key = "settings.widget.show_stats.label"
+    description_key = "settings.widget.show_stats.description"
     default = false
+
 
 [[setting]]
 key         = "update_interval"
-type        = "int"
+type        = "double"
 label_key   = "settings.update_interval.label"
-description = "Vitesse de rafraîchissement des données système et de la liste des processus."
+description_key = "settings.update_interval.description"
 default     = 1
 min         = 1
 max         = 5

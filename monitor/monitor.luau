@@ -174,6 +174,121 @@ local function humanizeBytes(bytes)
     return string.format("%.1f %s", value, units[unitIndex])
 end
 
+-- ── ProcessMonitor ───────────────────────────────────────────────────────
+-- Lists the processes owned by the current user. This used to live in the
+-- headless service (service.luau), but that meant `ps`/`/proc` polling ran
+-- non-stop in the background even while the dashboard was closed. It now
+-- runs directly from the panel, only while the panel is open (see the
+-- onOpen/onClose/update lifecycle at the bottom of this file). service.luau
+-- is now dedicated to the bar widget's tooltip (system_metrics) only.
+--
+-- Per-process network usage is intentionally NOT reported here: Linux does
+-- not expose it through /proc without extra tooling (nethogs, iftop...), so
+-- rather than faking a value the panel treats it as "not available" and
+-- relies on a name-based heuristic for the "Network" category filter.
+--
+-- Performance note: the process TABLE (pid/cpu/mem/name) comes from one
+-- `ps` call, already scoped to the current user, and /proc is only used for
+-- the extra detail (disk I/O, full process name) on a bounded number of
+-- rows. Scanning /proc entirely by hand would mean thousands of individual
+-- noctalia.readFile calls per tick on a real desktop session (300-500+
+-- system-wide processes) — `ps` reads /proc too, but natively in a single
+-- optimized process, which is dramatically cheaper.
+
+local ProcessMonitor = {}
+
+ProcessMonitor.MAX_PROCESSES = 150   -- hard cap so the UI stays responsive
+ProcessMonitor.MAX_DETAILED = 40     -- bounds the extra /proc reads (disk I/O, full name)
+
+local function currentUser()
+    return noctalia.getenv("USER") or noctalia.getenv("LOGNAME") or ""
+end
+
+local function readProcessDiskIO(pid)
+    local content = noctalia.readFile("/proc/" .. pid .. "/io")
+    if not content then
+        return 0, 0
+    end
+
+    local readBytes = tonumber(string.match(content, "read_bytes:%s*(%d+)")) or 0
+    local writeBytes = tonumber(string.match(content, "write_bytes:%s*(%d+)")) or 0
+    return readBytes, writeBytes
+end
+
+-- /proc/<pid>/cmdline holds the untruncated argv, unlike `ps comm` which the
+-- kernel still caps; this is a single bounded extra read, not a full scan.
+local function readFullProcessName(pid, fallback)
+    local cmdline = noctalia.readFile("/proc/" .. pid .. "/cmdline")
+    if cmdline and cmdline ~= "" then
+        local firstArg = string.match(cmdline, "^[^%z]*")
+        if firstArg and firstArg ~= "" then
+            return string.match(firstArg, "([^/]+)$") or firstArg
+        end
+    end
+    return fallback
+end
+
+local function parseProcessLine(line)
+    -- Fields: pid, %cpu, %mem, comm (widened to 32 chars via `comm:32=`)
+    local pid, cpu, mem, name = string.match(line, "^%s*(%d+)%s+([%d%.]+)%s+([%d%.]+)%s+(.-)%s*$")
+    if not pid or not name or name == "" then
+        return nil
+    end
+
+    -- Kernel threads show up as "[name]"; skip them defensively even though
+    -- `-u <user>` should already exclude root-owned ones in the common case.
+    if string.match(name, "^%[.*%]$") then
+        return nil
+    end
+
+    return {
+        pid = tonumber(pid),
+        cpu = tonumber(cpu) or 0,
+        memPercent = tonumber(mem) or 0,
+        name = name,
+    }
+end
+
+-- Fetches the current user's process list. `onDone(list)` receives entries
+-- shaped as { pid, name, cpu, memPercent, diskRead, diskWrite, diskTotal }.
+function ProcessMonitor.collect(onDone)
+    local user = currentUser()
+    local userFlag = (user ~= "") and ("-u " .. user .. " ") or ""
+    local cmd = "ps " .. userFlag .. "-eo pid=,pcpu=,pmem=,comm:32= --sort=-pcpu"
+
+    noctalia.runAsync(cmd, function(res)
+        local list = {}
+
+        if res.exitCode == 0 then
+            for line in string.gmatch(res.stdout, "[^\r\n]+") do
+                local proc = parseProcessLine(line)
+                if proc then
+                    table.insert(list, proc)
+                    if #list >= ProcessMonitor.MAX_PROCESSES then
+                        break
+                    end
+                end
+            end
+
+            for i, proc in ipairs(list) do
+                if i <= ProcessMonitor.MAX_DETAILED then
+                    local readBytes, writeBytes = readProcessDiskIO(proc.pid)
+                    proc.diskRead = readBytes
+                    proc.diskWrite = writeBytes
+                    proc.diskTotal = readBytes + writeBytes
+                    proc.name = readFullProcessName(proc.pid, proc.name)
+                else
+                    proc.diskRead = 0
+                    proc.diskWrite = 0
+                    proc.diskTotal = 0
+                end
+            end
+        end
+
+        onDone(list)
+    end)
+end
+
 -- ── State ────────────────────────────────────────────────────────────────
 
 local state = {
@@ -218,7 +333,7 @@ local function rowProcess(pid, name, cpu, ram, disk, net, killHandlerName)
 
     end
 
-    return ui.row({ padding = ROW_PADDING, align = "center", justify = "space_between" }, {
+    return ui.row({ padding = ROW_PADDING, align = "start", justify = "space_between" }, {
         ui.label({ text = pid, flexGrow = 1, textAlign = "start" }),
         ui.label({ text = name, maxLines = 1, flexGrow = 1, textAlign = "start", maxWidth = COLUMN_PROCESS_WIDTH }),
         ui.label({ text = cpu, flexGrow = 1, textAlign = "start" }),
@@ -339,6 +454,7 @@ local function renderUI()
                 ui.label({ text = tr("column_ram"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
                 ui.label({ text = tr("column_disk"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
                 ui.label({ text = tr("column_net"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                ui.label({ text = tr("column_action"), fontWeight = "bold", flexGrow = 1, textAlign = "end" }),
             }),
             ui.scroll({ flexGrow = 1 }, {
                 processesList(),
@@ -451,20 +567,36 @@ function onKill47() killProcessAtIndex(47) end
 function onKill48() killProcessAtIndex(48) end
 function onKill49() killProcessAtIndex(49) end
 
--- ── Lifecycle ────────────────────────────────────────────────────────────<
+-- ── Lifecycle ────────────────────────────────────────────────────────────
+-- The panel now owns its own polling loop instead of watching a service:
+-- `ps`/`/proc` only get read while the dashboard is actually open.
 
-noctalia.state.watch("user_processes", function(list)
-    state.processes = list or {}
-    renderUI()
-end)
+local function tickIntervalMs()
+    local interval = tonumber(panel.getConfig("update_interval")) or 1
+    return interval * 1000
+end
 
-noctalia.state.watch("user_processes_loading", function(isLoading)
-    state.loading = isLoading and true or false
-    renderUI()
-end)
+local function refreshProcesses()
+    ProcessMonitor.collect(function(list)
+        state.processes = list or {}
+        state.loading = false
+        renderUI()
+    end)
+end
+
+function update()
+    noctalia.setUpdateInterval(tickIntervalMs())
+    refreshProcesses()
+end
 
 function onOpen(_context)
+    panel.setWantsSecondTicks(true)
     renderUI()
+    refreshProcesses()
+end
+
+function onClose()
+    panel.setWantsSecondTicks(false)
 end
 
 function onCloseClicked()
