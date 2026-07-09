@@ -25,6 +25,11 @@ local function tr(key)
     return noctalia.tr(key)
 end
 
+local row = ui.row
+local column = ui.column
+local label = ui.label
+local button = ui.button
+
 -- ── Categories ───────────────────────────────────────────────────────────
 -- Name-based heuristics: Linux does not expose a "this process talks to the
 -- network" / "this process uses the GPU" flag without extra tooling, so we
@@ -310,9 +315,9 @@ local lastRenderedList = {}
 -- a FIXED width (not `flex`) and truncated to one line: letting it grow
 -- with content pushed every following column out of alignment.
 
-local COLUMN_PROCESS_WIDTH = 200
+local COLUMN_PROCESS_WIDTH = 100
 local ROW_PADDING = 6
-local ROW_GAP = 8
+local PADDING_LIST = 12
 
 -- Bounded pool of Kill handlers (see the note at the top of the file). Rows
 -- beyond this position simply render without a Kill button.
@@ -321,26 +326,25 @@ local KILL_SLOT_COUNT = 50
 local function rowProcess(pid, name, cpu, ram, disk, net, killHandlerName)
     local killCell
     if killHandlerName then
-        killCell = ui.button({
+        killCell = button({
             glyph = "square-rounded-x",
             glyphSize = 13,
             variant = "destructive",
-            width = COLUMN_KILL_WIDTH,
-            height = COLUMN_KILL_WIDTH,
             onClick = killHandlerName,
         })
     else
 
     end
 
-    return ui.row({ padding = ROW_PADDING, align = "start", justify = "space_between" }, {
-        ui.label({ text = pid, flexGrow = 1, textAlign = "start" }),
-        ui.label({ text = name, maxLines = 1, flexGrow = 1, textAlign = "start", maxWidth = COLUMN_PROCESS_WIDTH }),
-        ui.label({ text = cpu, flexGrow = 1, textAlign = "start" }),
-        ui.label({ text = ram, flexGrow = 1, textAlign = "start" }),
-        ui.label({ text = disk, flexGrow = 1, textAlign = "start" }),
-        ui.label({ text = net, flexGrow = 1, textAlign = "start" }),
+    return row({ padding = 6 }, {
+        label({ text = pid, flexGrow = 1, textAlign = "start" }),
+        label({ text = name, maxLines = 1, flexGrow = 1, textAlign = "start", maxWidth = COLUMN_PROCESS_WIDTH }),
+        label({ text = cpu, flexGrow = 1, textAlign = "start" }),
+        label({ text = ram, flexGrow = 1, textAlign = "start" }),
+        label({ text = disk, flexGrow = 1, textAlign = "start" }),
+        label({ text = net, flexGrow = 1, textAlign = "start" }),
         killCell,
+        ui.spacer({ flexGrow = .65 }),
     })
 end
 
@@ -354,15 +358,15 @@ local function filterChip(label, active, onClick, key)
 end
 
 local function filtersPanel()
-    return ui.row({ gap = 6, align = "center" }, {
-        ui.row({ gap = 6, align = "center", flexGrow = 1 }, {
+    return row({ gap = 6, align = "center" }, {
+        row({ gap = 6, align = "center", flexGrow = 1 }, {
             filterChip(tr("category_processes"), state.categoryKey == "processes", "onCategoryProcesses", "filter_cat_processes"),
             filterChip(tr("category_memory"), state.categoryKey == "memory", "onCategoryMemory", "filter_cat_memory"),
             filterChip(tr("category_storage"), state.categoryKey == "storage", "onCategoryStorage", "filter_cat_storage"),
             filterChip(tr("category_network"), state.categoryKey == "network", "onCategoryNetwork", "filter_cat_network"),
             filterChip(tr("category_graphics"), state.categoryKey == "graphics", "onCategoryGraphics", "filter_cat_graphics"),
         }),
-        ui.row({ flexGrow = 1 }, {
+        row({ flexGrow = 1 }, {
             ui.select({
                 key = "sort",
                 options = sortLabelList(),
@@ -404,8 +408,8 @@ local function processRows(list)
 end
 
 local function emptyState(textKey)
-    return ui.column({ flexGrow = 1, gap = 12, align = "center", justify = "center" }, {
-        ui.label({ text = tr(textKey), color = "on_surface_variant" }),
+    return column({ flexGrow = 1, gap = 12, align = "center", justify = "center" }, {
+        label({ text = tr(textKey), color = "on_surface_variant" }),
     })
 end
 
@@ -422,22 +426,22 @@ local function processesList()
         return emptyState("no_results")
     end
 
-    return ui.column({ flexGrow = 1 }, processRows(filtered))
+    return column({ padding = PADDING_LIST, fill = "surface", radius = 6 }, processRows(filtered))
 end
 
 local function renderUI()
     panel.render(
-        ui.column({ flexGrow = 1, gap = 12, justify = "space_between", align = "stretch" }, {
+        column({ flexGrow = 1, gap = 12, justify = "space_between", align = "stretch" }, {
 
             -- 1. HEADER (Titre)
-            ui.row({ align = "center", justify = "space_between", gap = 8 }, {
-                ui.label({ text = tr("title"), fontSize = 16, fontWeight = "bold", color = "on_surface", flexGrow = 1 }),
-                ui.button({ glyph = "close", onClick = "onCloseClicked" }),
+            row({ align = "center", justify = "space_between", gap = 8 }, {
+                label({ text = tr("title"), fontSize = 16, fontWeight = "bold", color = "on_surface", flexGrow = 1 }),
+                button({ glyph = "close", onClick = "onCloseClicked" }),
             }),
 
             filtersPanel(),
 
-            ui.row({  }, {
+            row({  }, {
                 ui.input({
                     key = "search",
                     placeholder = tr("search_process_placeholder"),
@@ -447,14 +451,14 @@ local function renderUI()
                 }),
             }),
 
-            ui.row({ padding = 5, justify = "space_between"}, {
-                ui.label({ text = tr("column_pid"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
-                ui.label({ text = tr("column_process"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
-                ui.label({ text = tr("column_cpu"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
-                ui.label({ text = tr("column_ram"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
-                ui.label({ text = tr("column_disk"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
-                ui.label({ text = tr("column_net"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
-                ui.label({ text = tr("column_action"), fontWeight = "bold", flexGrow = 1, textAlign = "end" }),
+            row({ padding = PADDING_LIST, justify = "space_between", fill = "surface", radius = 6 }, {
+                label({ text = tr("column_pid"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                label({ text = tr("column_process"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                label({ text = tr("column_cpu"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                label({ text = tr("column_ram"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                label({ text = tr("column_disk"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                label({ text = tr("column_net"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
+                label({ text = tr("column_action"), fontWeight = "bold", flexGrow = 1, textAlign = "start" }),
             }),
             ui.scroll({ flexGrow = 1 }, {
                 processesList(),
@@ -591,6 +595,7 @@ end
 
 function onOpen(_context)
     panel.setWantsSecondTicks(true)
+
     renderUI()
     refreshProcesses()
 end

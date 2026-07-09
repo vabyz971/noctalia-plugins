@@ -1,7 +1,7 @@
 [[plugin]]
 id = "vabyz971/monitor"
 name = "Monitor Dashboard"
-version = "0.4.2"
+version = "0.4.3"
 min_noctalia = "5.0.0"
 author = "Vabyz971"
 license = "MIT"
