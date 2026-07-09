@@ -1,0 +1,61 @@
+{
+  "title": "Moniteur",
+  "filter_categories": "Filtres",
+  "category_processes": "Processus",
+  "category_memory": "Mémoire",
+  "category_storage": "Stockage",
+  "category_network": "Réseau",
+  "category_graphics": "Graphiques",
+
+  "sort_options": {
+    "croissant": "Croissant",
+    "descending": "Décroissant",
+    "alphabetical": "Alphabétique"
+  },
+  "loading": "Chargement...",
+  "no_results": "Aucun processus correspondant",
+  "not_available": "N/D",
+
+  "search_process_placeholder": "Rechercher un PID ou des processus...",
+  "column_pid": "PID",
+  "column_process": "Processus",
+  "column_cpu": "CPU",
+  "column_ram": "RAM",
+  "column_disk": "DISK",
+  "column_net": "NET",
+  "column_action": "Action",
+
+  "tooltip_cpu": "CPU",
+  "tooltip_temp": "Temp. CPU",
+  "tooltip_ram": "RAM",
+  "tooltip_disk": "DISK",
+
+  "launcher_provider": {
+    "description": "Ouvrir le moniteur d'activité système — Appuyez sur Entrée pour confirmer"
+  },
+
+  "settings": {
+    "update_interval": {
+      "label": "Fréquence de rafraîchissement (secondes)",
+      "description": "Fréquence de mise à jour des données"
+    },
+    "widget": {
+      "glyph": {
+        "label": "Glyph",
+        "description": "Changer le glyph affiché dans la barre."
+      },
+      "show_widget_text": {
+        "label": "Afficher le texte du widget",
+        "description": "Afficher le texte du widget dans la barre."
+      },
+      "use_emoji": {
+        "label": "Utiliser des émojis dans les infobulles",
+        "description": "Remplacer les libellés de texte par des icônes dans l'infobulle."
+      },
+      "show_stats": {
+        "label": "Afficher les statistiques dans la barre",
+        "description": "Afficher la consommation CPU et RAM directement sur la barre."
+      }
+    }
+  }
+}
